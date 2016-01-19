@@ -19,6 +19,12 @@ const (
 	// SELECT starts a SELECT FROM query.
 	SELECT
 
+	// UPSERT inserts or replaces a key-value pair.
+	UPSERT
+
+	// INTO sets which keyspace the new key-value pair will be inserted into.
+	INTO
+
 	// DELETE deletes keys from a keyspace.
 	DELETE
 
@@ -57,12 +63,15 @@ var tokenMap = map[lexer.Token]string{
 	CREATE:   "CREATE",
 	SELECT:   "SELECT",
 	DELETE:   "DELETE",
+	UPSERT:   "UPSERT",
+	INTO:     "INTO",
 	DROP:     "DROP",
 	FROM:     "FROM",
 	WHERE:    "WHERE",
 	KEYSPACE: "KEYSPACE",
 	WITH:     "WITH",
 	KEY:      "KEY",
+	KEYS:     "KEYS",
 	BETWEEN:  "BETWEEN",
 }
 
