@@ -1,5 +1,7 @@
 package parser
 
+import "bytes"
+
 type Operator int
 
 const (
@@ -9,15 +11,28 @@ const (
 	BetweenOperator
 )
 
+func (o Operator) String() string {
+	switch o {
+	case EqualityOperator:
+		return " = "
+	case AndOperator:
+		return " AND "
+	case OrOperator:
+		return " OR "
+	case BetweenOperator:
+		return " BETWEEN "
+	}
+	return ""
+}
+
 type Expression interface {
 	Operator() Operator
-	Left() Node
-	Right() Node
+	String() string
 }
 
 type EqualityExpression struct {
 	KeyAttribute string
-	Value        StringLiteral
+	Value        Node
 }
 
 func (e EqualityExpression) NodeType() NodeType {
@@ -28,59 +43,18 @@ func (e EqualityExpression) Operator() Operator {
 	return EqualityOperator
 }
 
-func (e EqualityExpression) Left() KeyAttribute {
-	return KeyAttribute{e.KeyAttribute}
-}
-
-func (e EqualityExpression) Right() StringLiteral {
-	return e.Value
-}
-
-type AndExpression struct {
-	L Node
-	R Node
-}
-
-func (a AndExpression) NodeType() NodeType {
-	return ExpressionType
-}
-
-func (a AndExpression) Operator() Operator {
-	return AndOperator
-}
-
-func (a AndExpression) Left() Node {
-	return a.L
-}
-
-func (a AndExpression) Right() Node {
-	return a.R
-}
-
-type OrExpression struct {
-	L Node
-	R Node
-}
-
-func (o OrExpression) NodeType() NodeType {
-	return ExpressionType
-}
-
-func (o OrExpression) Operator() Operator {
-	return OrOperator
-}
-
-func (o OrExpression) Left() Node {
-	return o.L
-}
-
-func (o OrExpression) Right() Node {
-	return o.R
+func (e EqualityExpression) String() string {
+	var buf bytes.Buffer
+	buf.WriteString(" ")
+	buf.WriteString(e.KeyAttribute)
+	buf.WriteString(e.Operator().String())
+	buf.WriteString(e.Value.String())
+	return buf.String()
 }
 
 type BetweenExpression struct {
-	Attribute string
-	Values    AndExpression
+	KeyAttribute string
+	Values       StringLiteralGroup
 }
 
 func (b BetweenExpression) NodeType() NodeType {
@@ -91,10 +65,11 @@ func (b BetweenExpression) Operator() Operator {
 	return BetweenOperator
 }
 
-func (b BetweenExpression) Left() KeyAttribute {
-	return KeyAttribute{b.Attribute}
-}
-
-func (b BetweenExpression) Right() Node {
-	return b.Values
+func (b BetweenExpression) String() string {
+	var buf bytes.Buffer
+	buf.WriteString(" ")
+	buf.WriteString(b.KeyAttribute)
+	buf.WriteString(BetweenOperator.String())
+	buf.WriteString(b.Values.String())
+	return buf.String()
 }
