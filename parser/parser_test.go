@@ -355,6 +355,13 @@ func BenchmarkComplexUpsertStatement(b *testing.B) {
 	}
 }
 
+func BenchmarkLargeUpsertStatement(b *testing.B) {
+	stmt := `UPSERT "{\"id\": \"012-34567890\", \"firstName\": \"John\", \"lastName\": \"Smith\", \"age\": 25, \"address\": {\"streetAddress\": \"21 2nd Street\", \"city\": \"New York\", \"state\": \"NY\", \"postalCode\": \"10021\"}, \"phoneNumber\": [{\"type\": \"home\", \"number\": \"212 555-1234\"}, {\"type\": \"fax\", \"number\": \"646 555-4567\"} ], \"gender\": {\"type\": \"male\"} }" INTO state.postalcode.city.user WHERE state = "NY" AND postalcode = "10021" AND city = "New York" AND id = "012-34567890"`
+	for i := 0; i < b.N; i++ {
+		NewParser(strings.NewReader(stmt)).ParseStatement()
+	}
+}
+
 // func BenchmarkShowNamespacesStatement(b *testing.B) {
 // 	stmt := "SHOW KEYSPACES"
 // 	for i := 0; i < b.N; i++ {
